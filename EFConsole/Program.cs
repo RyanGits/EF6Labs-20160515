@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,44 +17,96 @@ namespace EFConsole
     {
         static void Main(string[] args)
         {
+            //離線模式資料操作();
+            //呼叫預存程序();
+
             using (var db = new ContosoUniversityEntities())
             {
-                //EF基本操作練習(db);
+                db.Database.Log = Console.WriteLine;
 
-                //取得物件實體狀態(db);
+                db.Configuration.LazyLoadingEnabled = false;
 
-                var c = db.Course.First();
-                c.Title = "TEST 123";
-                //c.ModifiedOn = DateTime.Now;
-                if (db.Entry(c).State == System.Data.Entity.EntityState.Modified)
+                var data = db.Course
+                    .Where(p => p.CourseType.HasFlag(CourseType.前端));
+
+                foreach (var item in data)
                 {
-                    var ce = db.Entry(c);
-                    
-                    var v1 = ce.CurrentValues.GetValue<string>("Title");
-                    v1 = c.Title;
-                    v1 = ce.Entity.Title;
-
-                    var v2 = ce.OriginalValues.GetValue<string>("Title");
-
-                    foreach (var prop in ce.OriginalValues.PropertyNames)
+                    Console.WriteLine("------------------------------------");
+                    Console.WriteLine(item.Title);
+                    var refLink = db.Entry(item).Reference(p => p.Department);
+                    if (!refLink.IsLoaded)
                     {
-                        //ce.OriginalValues.GetValue<string>(prop);
+                        refLink.Load();
                     }
-
-                    Console.WriteLine("New Value: " + v1 + "\r\nOld Value: " + v2);
-
-
-                    ce.CurrentValues.SetValues(new
-                    {
-                        ModifiedOn = DateTime.Now
-                    });
+                    Console.WriteLine(item.Department.Name);
+                    Console.WriteLine("------------------------------------");
+                    Console.WriteLine();
                 }
 
+                //var c = db.Course.Find(5);
+                //c.CourseType = CourseType.前端 | CourseType.後端;
+                //db.SaveChanges();
+
+                //Console.WriteLine(db.Course.Find(7).CourseType);
+
+                //db.Department.Add(new Department()
+                //{
+                //    Name = "TEST0515",
+                //    Budget = 123.45M,
+                //    StartDate = DateTime.Now.AddDays(-29),
+                //    InstructorID = 4
+                //});
+
+                //db.SaveChanges();
+            }
 
 
+        }
+
+        private static void 呼叫預存程序()
+        {
+
+            using (var db = new ContosoUniversityEntities())
+            {
+                var data = db.Get部門名稱與課程數量統計(4);
+
+                foreach (var item in data)
+                {
+                    Console.WriteLine(item.Name + "\t" + item.CourseCount);
+                }
+            }
+        }
+
+        private static void 離線模式資料操作()
+        {
+            var c = new Course() { CourseID = 20, Title = "123", DepartmentID = 1, Credits = 1 };
+
+            using (var db = new ContosoUniversityEntities())
+            {
+                Console.WriteLine(db.Entry(c).State);
+
+                db.Course.Attach(c);
+                Console.WriteLine(c.Title);
+                Console.WriteLine(db.Entry(c).State);
+
+                db.Course.ToList();
+
+                var tt = db.Course.Find(20);
+                Console.WriteLine(tt.Title);
+
+                //db.Course.Add(c);
+
+                //c.Title = "321";
+                //Console.WriteLine(db.Entry(c).State);
+                //db.SaveChanges();
+            }
 
 
-
+            using (var db = new ContosoUniversityEntities())
+            {
+                //c.Title = "111111";
+                //db.Entry(c).State = EntityState.Modified;
+                //db.SaveChanges();
             }
         }
 
@@ -81,6 +134,36 @@ namespace EFConsole
 
             //db.Entry(c).State = System.Data.Entity.EntityState.Added;
             //db.SaveChanges();
+
+
+
+            //var c = db.Course.First();
+            //c.Title = "TEST 123";
+            ////c.ModifiedOn = DateTime.Now;
+            //if (db.Entry(c).State == System.Data.Entity.EntityState.Modified)
+            //{
+            //    var ce = db.Entry(c);
+
+            //    var v1 = ce.CurrentValues.GetValue<string>("Title");
+            //    v1 = c.Title;
+            //    v1 = ce.Entity.Title;
+
+            //    var v2 = ce.OriginalValues.GetValue<string>("Title");
+
+            //    foreach (var prop in ce.OriginalValues.PropertyNames)
+            //    {
+            //        //ce.OriginalValues.GetValue<string>(prop);
+            //    }
+
+            //    Console.WriteLine("New Value: " + v1 + "\r\nOld Value: " + v2);
+
+
+            //    ce.CurrentValues.SetValues(new
+            //    {
+            //        ModifiedOn = DateTime.Now
+            //    });
+
+            //}
         }
 
         private static void EF基本操作練習(ContosoUniversityEntities db)

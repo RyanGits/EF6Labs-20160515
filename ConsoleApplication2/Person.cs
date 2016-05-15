@@ -7,35 +7,34 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace EFConsole
+namespace ConsoleApplication2
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class Course
+    public partial class Person
     {
-    	partial void Initialize();
-    
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Course()
+        public Person()
         {
+            this.Department = new HashSet<Department>();
             this.Enrollment = new HashSet<Enrollment>();
-            this.Person = new HashSet<Person>();
-    		Initialize();
+            this.Course = new HashSet<Course>();
         }
     
-        public int CourseID { get; set; }
-        public string Title { get; set; }
-        public Nullable<int> Credits { get; set; }
-        public int DepartmentID { get; set; }
-        public System.DateTime CreatedOn { get; set; }
-        public Nullable<System.DateTime> ModifiedOn { get; set; }
-        public CourseType CourseType { get; set; }
+        public int ID { get; set; }
+        public string LastName { get; set; }
+        public string FirstName { get; set; }
+        public Nullable<System.DateTime> HireDate { get; set; }
+        public Nullable<System.DateTime> EnrollmentDate { get; set; }
+        public string Discriminator { get; set; }
     
-        public virtual Department Department { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Department> Department { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Enrollment> Enrollment { get; set; }
+        public virtual OfficeAssignment OfficeAssignment { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Person> Person { get; set; }
+        public virtual ICollection<Course> Course { get; set; }
     }
 }

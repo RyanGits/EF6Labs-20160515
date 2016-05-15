@@ -7,21 +7,18 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace EFConsole
+namespace WebApplication1.Models
 {
     using System;
     using System.Collections.Generic;
     
     public partial class Course
     {
-    	partial void Initialize();
-    
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Course()
         {
             this.Enrollment = new HashSet<Enrollment>();
             this.Person = new HashSet<Person>();
-    		Initialize();
         }
     
         public int CourseID { get; set; }
@@ -30,7 +27,6 @@ namespace EFConsole
         public int DepartmentID { get; set; }
         public System.DateTime CreatedOn { get; set; }
         public Nullable<System.DateTime> ModifiedOn { get; set; }
-        public CourseType CourseType { get; set; }
     
         public virtual Department Department { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

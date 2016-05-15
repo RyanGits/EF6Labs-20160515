@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="ContosoUniversityModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="ContosoUniversityModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Course">
           <Key>
             <PropertyRef Name="CourseID" />
@@ -13,9 +13,8 @@
           <Property Name="Title" Type="nvarchar" MaxLength="50" />
           <Property Name="Credits" Type="int" />
           <Property Name="DepartmentID" Type="int" Nullable="false" />
-          <Property Name="CreatedOn" Type="datetime" Nullable="false" StoreGeneratedPattern="Computed" />
+          <Property Name="CreatedOn" Type="datetime" Nullable="false" />
           <Property Name="ModifiedOn" Type="datetime" />
-          <Property Name="CourseType" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="CourseInstructor">
           <Key>
@@ -63,24 +62,15 @@
           <Property Name="EnrollmentDate" Type="datetime" />
           <Property Name="Discriminator" Type="nvarchar" MaxLength="128" Nullable="false" />
         </EntityType>
-        <!--產生期間發現錯誤:
-警告 6002: 資料表/檢視 'ContosoUniversity.dbo.vwDept' 未定義主索引鍵。已推斷此索引鍵，並將定義建立成唯讀的資料表/檢視。-->
-        <EntityType Name="vwDept">
+        <EntityType Name="sysdiagrams">
           <Key>
-            <PropertyRef Name="DeptName" />
+            <PropertyRef Name="diagram_id" />
           </Key>
-          <Property Name="DeptName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="CourseCount" Type="int" />
-        </EntityType>
-        <!--產生期間發現錯誤:
-警告 6002: 資料表/檢視 'ContosoUniversity.dbo.vwDeptCourseCount' 未定義主索引鍵。已推斷此索引鍵，並將定義建立成唯讀的資料表/檢視。-->
-        <EntityType Name="vwDeptCourseCount">
-          <Key>
-            <PropertyRef Name="DepartmentID" />
-          </Key>
-          <Property Name="DepartmentID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Name" Type="nvarchar" MaxLength="50" />
-          <Property Name="CourseCount" Type="int" />
+          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="principal_id" Type="int" Nullable="false" />
+          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="version" Type="int" />
+          <Property Name="definition" Type="varbinary(max)" />
         </EntityType>
         <Association Name="FK_dbo_Course_dbo_Department_DepartmentID">
           <End Role="Department" Type="Self.Department" Multiplicity="1">
@@ -176,13 +166,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Function Name="GetDept" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="id" Type="int" Mode="In" />
-        </Function>
-        <Function Name="InsertDept" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="Name" Type="nvarchar" Mode="In" />
-          <Parameter Name="Budget" Type="decimal" Mode="In" />
-        </Function>
         <EntityContainer Name="ContosoUniversityModelStoreContainer">
           <EntitySet Name="Course" EntityType="Self.Course" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CourseInstructor" EntityType="Self.CourseInstructor" Schema="dbo" store:Type="Tables" />
@@ -190,19 +173,7 @@
           <EntitySet Name="Enrollment" EntityType="Self.Enrollment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OfficeAssignment" EntityType="Self.OfficeAssignment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Person" EntityType="Self.Person" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="vwDept" EntityType="Self.vwDept" store:Type="Views" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-    [vwDept].[DeptName] AS [DeptName], 
-    [vwDept].[CourseCount] AS [CourseCount]
-    FROM [dbo].[vwDept] AS [vwDept]</DefiningQuery>
-          </EntitySet>
-          <EntitySet Name="vwDeptCourseCount" EntityType="Self.vwDeptCourseCount" store:Type="Views" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-    [vwDeptCourseCount].[DepartmentID] AS [DepartmentID], 
-    [vwDeptCourseCount].[Name] AS [Name], 
-    [vwDeptCourseCount].[CourseCount] AS [CourseCount]
-    FROM [dbo].[vwDeptCourseCount] AS [vwDeptCourseCount]</DefiningQuery>
-          </EntitySet>
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_dbo_Course_dbo_Department_DepartmentID" Association="Self.FK_dbo_Course_dbo_Department_DepartmentID">
             <End Role="Department" EntitySet="Department" />
             <End Role="Course" EntitySet="Course" />
@@ -232,7 +203,8 @@
             <End Role="OfficeAssignment" EntitySet="OfficeAssignment" />
           </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="ContosoUniversityModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -244,12 +216,11 @@
           <Property Name="Title" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Credits" Type="Int32" />
           <Property Name="DepartmentID" Type="Int32" Nullable="false" />
+          <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Department" Relationship="Self.FK_dbo_Course_dbo_Department_DepartmentID" FromRole="Course" ToRole="Department" />
           <NavigationProperty Name="Enrollment" Relationship="Self.FK_dbo_Enrollment_dbo_Course_CourseID" FromRole="Course" ToRole="Enrollment" />
           <NavigationProperty Name="Person" Relationship="Self.CourseInstructor" FromRole="Course" ToRole="Person" />
-          <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="3" annotation:StoreGeneratedPattern="Computed" />
-          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
-          <Property Name="CourseType" Type="ContosoUniversityModel.CourseType" Nullable="false" />
         </EntityType>
         <EntityType Name="Department">
           <Key>
@@ -298,8 +269,18 @@
           <NavigationProperty Name="OfficeAssignment" Relationship="Self.FK_dbo_OfficeAssignment_dbo_Instructor_InstructorID" FromRole="Person" ToRole="OfficeAssignment" />
           <NavigationProperty Name="Course" Relationship="Self.CourseInstructor" FromRole="Person" ToRole="Course" />
         </EntityType>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="principal_id" Type="Int32" Nullable="false" />
+          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="version" Type="Int32" />
+          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+        </EntityType>
         <Association Name="FK_dbo_Course_dbo_Department_DepartmentID">
-          <End Role="Department" Type="ContosoUniversityModel.Department" Multiplicity="1">
+          <End Role="Department" Type="Self.Department" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
           <End Role="Course" Type="Self.Course" Multiplicity="*" />
@@ -328,7 +309,7 @@
         </Association>
         <Association Name="FK_dbo_Department_dbo_Instructor_InstructorID">
           <End Role="Person" Type="Self.Person" Multiplicity="0..1" />
-          <End Role="Department" Type="ContosoUniversityModel.Department" Multiplicity="*" />
+          <End Role="Department" Type="Self.Department" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Person">
               <PropertyRef Name="ID" />
@@ -370,10 +351,11 @@
         </Association>
         <EntityContainer Name="ContosoUniversityEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Course" EntityType="Self.Course" />
-          <EntitySet Name="Department" EntityType="ContosoUniversityModel.Department" />
+          <EntitySet Name="Department" EntityType="Self.Department" />
           <EntitySet Name="Enrollment" EntityType="Self.Enrollment" />
           <EntitySet Name="OfficeAssignment" EntityType="Self.OfficeAssignment" />
           <EntitySet Name="Person" EntityType="Self.Person" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" />
           <AssociationSet Name="FK_dbo_Course_dbo_Department_DepartmentID" Association="Self.FK_dbo_Course_dbo_Department_DepartmentID">
             <End Role="Department" EntitySet="Department" />
             <End Role="Course" EntitySet="Course" />
@@ -398,42 +380,7 @@
             <End Role="Course" EntitySet="Course" />
             <End Role="Person" EntitySet="Person" />
           </AssociationSet>
-          <EntitySet Name="vwDeptCourseCount" EntityType="ContosoUniversityModel.vwDeptCourseCount" />
-          <EntitySet Name="vwDept" EntityType="ContosoUniversityModel.vwDept" />
-          <FunctionImport Name="Get部門名稱與課程數量統計" ReturnType="Collection(ContosoUniversityModel.GetDept_Result)" >
-          <Parameter Name="id" Mode="In" Type="Int32" />
-          </FunctionImport>
-          <FunctionImport Name="InsertDept">
-            <Parameter Name="Name" Mode="In" Type="String" />
-            <Parameter Name="Budget" Mode="In" Type="Decimal" />
-          </FunctionImport>
         </EntityContainer>
-        <EntityType Name="vwDeptCourseCount">
-          <Key>
-            <PropertyRef Name="DepartmentID" />
-          </Key>
-          <Property Name="DepartmentID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="CourseCount" Type="Int32" />
-        </EntityType>
-        <EntityType Name="vwDept">
-          <Key>
-            <PropertyRef Name="DeptName" />
-          </Key>
-          <Property Name="DeptName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="CourseCount" Type="Int32" />
-        </EntityType>
-        <ComplexType Name="GetDept_Result">
-          <Property Type="Int32" Name="DepartmentID" Nullable="false" />
-          <Property Type="String" Name="Name" Nullable="true" MaxLength="50" />
-          <Property Type="Int32" Name="CourseCount" Nullable="true" />
-        </ComplexType>
-        <EnumType Name="CourseType" IsFlags="true">
-          <Member Name="無" Value="0" />
-          <Member Name="前端" Value="1" />
-          <Member Name="後端" Value="2" />
-          <Member Name="全端" Value="4" />
-        </EnumType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -443,13 +390,12 @@
           <EntitySetMapping Name="Course">
             <EntityTypeMapping TypeName="ContosoUniversityModel.Course">
               <MappingFragment StoreEntitySet="Course">
-                <ScalarProperty Name="CourseType" ColumnName="CourseType" />
-                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
-                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
                 <ScalarProperty Name="CourseID" ColumnName="CourseID" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="Credits" ColumnName="Credits" />
                 <ScalarProperty Name="DepartmentID" ColumnName="DepartmentID" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -463,14 +409,6 @@
                 <ScalarProperty Name="InstructorID" ColumnName="InstructorID" />
                 <ScalarProperty Name="RowVersion" ColumnName="RowVersion" />
               </MappingFragment>
-            </EntityTypeMapping>
-            <EntityTypeMapping TypeName="ContosoUniversityModel.Department">
-              <ModificationFunctionMapping>
-                <InsertFunction FunctionName="ContosoUniversityModel.Store.InsertDept">
-                  <ScalarProperty Name="Budget" ParameterName="Budget" />
-                  <ScalarProperty Name="Name" ParameterName="Name" />
-                </InsertFunction>
-              </ModificationFunctionMapping>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Enrollment">
@@ -503,6 +441,17 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="sysdiagrams">
+            <EntityTypeMapping TypeName="ContosoUniversityModel.sysdiagrams">
+              <MappingFragment StoreEntitySet="sysdiagrams">
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="definition" ColumnName="definition" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <AssociationSetMapping Name="CourseInstructor" TypeName="ContosoUniversityModel.CourseInstructor" StoreEntitySet="CourseInstructor">
             <EndProperty Name="Course">
               <ScalarProperty Name="CourseID" ColumnName="CourseID" />
@@ -511,33 +460,6 @@
               <ScalarProperty Name="ID" ColumnName="InstructorID" />
             </EndProperty>
           </AssociationSetMapping>
-          <EntitySetMapping Name="vwDeptCourseCount">
-            <EntityTypeMapping TypeName="ContosoUniversityModel.vwDeptCourseCount">
-              <MappingFragment StoreEntitySet="vwDeptCourseCount">
-                <ScalarProperty Name="CourseCount" ColumnName="CourseCount" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="DepartmentID" ColumnName="DepartmentID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="vwDept">
-            <EntityTypeMapping TypeName="ContosoUniversityModel.vwDept">
-              <MappingFragment StoreEntitySet="vwDept">
-                <ScalarProperty Name="CourseCount" ColumnName="CourseCount" />
-                <ScalarProperty Name="DeptName" ColumnName="DeptName" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="Get部門名稱與課程數量統計" FunctionName="ContosoUniversityModel.Store.GetDept">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="ContosoUniversityModel.GetDept_Result">
-                <ScalarProperty Name="DepartmentID" ColumnName="DepartmentID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="CourseCount" ColumnName="CourseCount" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="InsertDept" FunctionName="ContosoUniversityModel.Store.InsertDept" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
