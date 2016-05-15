@@ -9,6 +9,12 @@ namespace EFConsole
 {
     public partial class ContosoUniversityEntities : DbContext
     {
+        protected override System.Data.Entity.Validation.DbEntityValidationResult ValidateEntity(System.Data.Entity.Infrastructure.DbEntityEntry entityEntry, IDictionary<object, object> items)
+        {
+
+            return base.ValidateEntity(entityEntry, items);
+        }
+
         public override int SaveChanges()
         {
             var entries = this.ChangeTracker.Entries();

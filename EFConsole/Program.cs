@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,7 +24,11 @@ namespace EFConsole
 
             using (var db = new ContosoUniversityEntities())
             {
-                db.Database.Log = Console.WriteLine;
+                db.Database.Log = (msg) =>
+                {
+                    //File.AppendAllText(@"G:\test.txt", msg);
+                    Debug.WriteLine(msg);
+                };
 
                 db.Configuration.LazyLoadingEnabled = false;
 
@@ -60,6 +66,7 @@ namespace EFConsole
                 //db.SaveChanges();
             }
 
+            //Console.ReadKey();
 
         }
 

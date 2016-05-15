@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApplication1", "Cons
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApplication2", "ConsoleApplication2\ConsoleApplication2.csproj", "{A9CAEC3C-203B-4124-8909-1D7FD362BD76}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFPOCOGen", "EFPOCOGen\EFPOCOGen.csproj", "{F50E92EE-80F4-4823-BC80-D4790F423E42}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{A9CAEC3C-203B-4124-8909-1D7FD362BD76}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A9CAEC3C-203B-4124-8909-1D7FD362BD76}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A9CAEC3C-203B-4124-8909-1D7FD362BD76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F50E92EE-80F4-4823-BC80-D4790F423E42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F50E92EE-80F4-4823-BC80-D4790F423E42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F50E92EE-80F4-4823-BC80-D4790F423E42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F50E92EE-80F4-4823-BC80-D4790F423E42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
