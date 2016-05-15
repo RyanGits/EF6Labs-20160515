@@ -20,34 +20,67 @@ namespace EFConsole
             {
                 //EF基本操作練習(db);
 
-                //var one = db.Course.Include("Department").FirstOrDefault(p => p.CourseID == 1);
-                //Console.WriteLine(one.Title + "\t" + one.Department.Name);
+                //取得物件實體狀態(db);
 
-
-                //foreach (var dept in db.Department)
-                //{
-                //    Console.WriteLine(dept.Name);
-
-                //    foreach (var course in dept.Course)
-                //    {
-                //        Console.WriteLine("\t" + course.Title);
-                //    }
-                //}
-
-                var sql = @"SELECT Department.DepartmentID, Department.Name, 
-                            (SELECT COUNT(*) FROM dbo.Course) as CourseCount
-                            FROM Department";
-                var data = db.Database.SqlQuery<DeptCourseCount>(sql);
-
-                foreach (var item in data)
+                var c = db.Course.First();
+                c.Title = "TEST 123";
+                //c.ModifiedOn = DateTime.Now;
+                if (db.Entry(c).State == System.Data.Entity.EntityState.Modified)
                 {
-                    Console.WriteLine(item.Name + "\t" + item.CourseCount);
+                    var ce = db.Entry(c);
+                    
+                    var v1 = ce.CurrentValues.GetValue<string>("Title");
+                    v1 = c.Title;
+                    v1 = ce.Entity.Title;
+
+                    var v2 = ce.OriginalValues.GetValue<string>("Title");
+
+                    foreach (var prop in ce.OriginalValues.PropertyNames)
+                    {
+                        //ce.OriginalValues.GetValue<string>(prop);
+                    }
+
+                    Console.WriteLine("New Value: " + v1 + "\r\nOld Value: " + v2);
+
+
+                    ce.CurrentValues.SetValues(new
+                    {
+                        ModifiedOn = DateTime.Now
+                    });
                 }
 
 
 
 
+
+
             }
+        }
+
+        private static void 取得物件實體狀態(ContosoUniversityEntities db)
+        {
+
+            db.Database.Log = Console.WriteLine;
+
+            var c = db.Course.ToList().LastOrDefault();
+            Console.WriteLine(c.Title + "\t" + db.Entry(c).State);
+
+            c.Credits += 1;
+            Console.WriteLine(c.Title + "\t" + db.Entry(c).State);
+            //db.SaveChanges();
+
+            db.Course.Remove(c);
+            Console.WriteLine(c.Title + "\t" + db.Entry(c).State);
+            //db.SaveChanges();
+
+            //db.Entry(c).State = System.Data.Entity.EntityState.Deleted;
+            //db.SaveChanges();
+
+            //db.Entry(c).State = System.Data.Entity.EntityState.Modified;
+            //db.SaveChanges();
+
+            //db.Entry(c).State = System.Data.Entity.EntityState.Added;
+            //db.SaveChanges();
         }
 
         private static void EF基本操作練習(ContosoUniversityEntities db)
@@ -94,6 +127,54 @@ namespace EFConsole
             //    item.Credits += 1;
             //}
             //db.SaveChanges();
+
+
+
+            //var one = db.Course.Include("Department").FirstOrDefault(p => p.CourseID == 1);
+            //Console.WriteLine(one.Title + "\t" + one.Department.Name);
+
+
+            //foreach (var dept in db.Department)
+            //{
+            //    Console.WriteLine(dept.Name);
+
+            //    foreach (var course in dept.Course)
+            //    {
+            //        Console.WriteLine("\t" + course.Title);
+            //    }
+            //}
+
+            //                var sql = @"SELECT Department.DepartmentID, Department.Name, 
+            //                            (SELECT COUNT(*) FROM dbo.Course) as CourseCount
+            //                            FROM Department";
+            //                var data = db.Database.SqlQuery<DeptCourseCount>(sql);
+
+            //var data = db.vwDeptCourseCount;
+
+            //foreach (var item in data)
+            //{
+            //    Console.WriteLine(item.Name + "\t" + item.CourseCount);
+            //}
+
+            //db.Course.Where(p => p.CourseID == 1);
+
+
+            // AutoMapper
+            //var c = db.Course.Create();
+            //c.DepartmentID = 1;
+            //c.Title = "123123123";
+            //db.Course.Add(c);
+            //db.SaveChanges();
+
+
+
+            //var data = db.Course.AsNoTracking();
+
+            //foreach (var item in data)
+            //{
+            //    Console.WriteLine(item.Title);
+            //}
+
         }
     }
 }

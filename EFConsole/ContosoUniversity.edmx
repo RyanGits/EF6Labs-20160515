@@ -11,8 +11,10 @@
           </Key>
           <Property Name="CourseID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Title" Type="nvarchar" MaxLength="50" />
-          <Property Name="Credits" Type="int" Nullable="false" />
+          <Property Name="Credits" Type="int" />
           <Property Name="DepartmentID" Type="int" Nullable="false" />
+          <Property Name="CreatedOn" Type="datetime" Nullable="false" StoreGeneratedPattern="Computed" />
+          <Property Name="ModifiedOn" Type="datetime" />
         </EntityType>
         <EntityType Name="CourseInstructor">
           <Key>
@@ -59,6 +61,25 @@
           <Property Name="HireDate" Type="datetime" />
           <Property Name="EnrollmentDate" Type="datetime" />
           <Property Name="Discriminator" Type="nvarchar" MaxLength="128" Nullable="false" />
+        </EntityType>
+        <!--產生期間發現錯誤:
+警告 6002: 資料表/檢視 'ContosoUniversity.dbo.vwDept' 未定義主索引鍵。已推斷此索引鍵，並將定義建立成唯讀的資料表/檢視。-->
+        <EntityType Name="vwDept">
+          <Key>
+            <PropertyRef Name="DeptName" />
+          </Key>
+          <Property Name="DeptName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="CourseCount" Type="int" />
+        </EntityType>
+        <!--產生期間發現錯誤:
+警告 6002: 資料表/檢視 'ContosoUniversity.dbo.vwDeptCourseCount' 未定義主索引鍵。已推斷此索引鍵，並將定義建立成唯讀的資料表/檢視。-->
+        <EntityType Name="vwDeptCourseCount">
+          <Key>
+            <PropertyRef Name="DepartmentID" />
+          </Key>
+          <Property Name="DepartmentID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" />
+          <Property Name="CourseCount" Type="int" />
         </EntityType>
         <Association Name="FK_dbo_Course_dbo_Department_DepartmentID">
           <End Role="Department" Type="Self.Department" Multiplicity="1">
@@ -161,6 +182,19 @@
           <EntitySet Name="Enrollment" EntityType="Self.Enrollment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OfficeAssignment" EntityType="Self.OfficeAssignment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Person" EntityType="Self.Person" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="vwDept" EntityType="Self.vwDept" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vwDept].[DeptName] AS [DeptName], 
+    [vwDept].[CourseCount] AS [CourseCount]
+    FROM [dbo].[vwDept] AS [vwDept]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="vwDeptCourseCount" EntityType="Self.vwDeptCourseCount" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vwDeptCourseCount].[DepartmentID] AS [DepartmentID], 
+    [vwDeptCourseCount].[Name] AS [Name], 
+    [vwDeptCourseCount].[CourseCount] AS [CourseCount]
+    FROM [dbo].[vwDeptCourseCount] AS [vwDeptCourseCount]</DefiningQuery>
+          </EntitySet>
           <AssociationSet Name="FK_dbo_Course_dbo_Department_DepartmentID" Association="Self.FK_dbo_Course_dbo_Department_DepartmentID">
             <End Role="Department" EntitySet="Department" />
             <End Role="Course" EntitySet="Course" />
@@ -200,11 +234,13 @@
           </Key>
           <Property Name="CourseID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Title" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Credits" Type="Int32" Nullable="false" />
+          <Property Name="Credits" Type="Int32" />
           <Property Name="DepartmentID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Department" Relationship="Self.FK_dbo_Course_dbo_Department_DepartmentID" FromRole="Course" ToRole="Department" />
           <NavigationProperty Name="Enrollment" Relationship="Self.FK_dbo_Enrollment_dbo_Course_CourseID" FromRole="Course" ToRole="Enrollment" />
           <NavigationProperty Name="Person" Relationship="Self.CourseInstructor" FromRole="Course" ToRole="Person" />
+          <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="3" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="Department">
           <Key>
@@ -353,7 +389,24 @@
             <End Role="Course" EntitySet="Course" />
             <End Role="Person" EntitySet="Person" />
           </AssociationSet>
+          <EntitySet Name="vwDeptCourseCount" EntityType="ContosoUniversityModel.vwDeptCourseCount" />
+          <EntitySet Name="vwDept" EntityType="ContosoUniversityModel.vwDept" />
         </EntityContainer>
+        <EntityType Name="vwDeptCourseCount">
+          <Key>
+            <PropertyRef Name="DepartmentID" />
+          </Key>
+          <Property Name="DepartmentID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CourseCount" Type="Int32" />
+        </EntityType>
+        <EntityType Name="vwDept">
+          <Key>
+            <PropertyRef Name="DeptName" />
+          </Key>
+          <Property Name="DeptName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CourseCount" Type="Int32" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -363,6 +416,8 @@
           <EntitySetMapping Name="Course">
             <EntityTypeMapping TypeName="ContosoUniversityModel.Course">
               <MappingFragment StoreEntitySet="Course">
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
                 <ScalarProperty Name="CourseID" ColumnName="CourseID" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="Credits" ColumnName="Credits" />
@@ -420,6 +475,23 @@
               <ScalarProperty Name="ID" ColumnName="InstructorID" />
             </EndProperty>
           </AssociationSetMapping>
+          <EntitySetMapping Name="vwDeptCourseCount">
+            <EntityTypeMapping TypeName="ContosoUniversityModel.vwDeptCourseCount">
+              <MappingFragment StoreEntitySet="vwDeptCourseCount">
+                <ScalarProperty Name="CourseCount" ColumnName="CourseCount" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="DepartmentID" ColumnName="DepartmentID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vwDept">
+            <EntityTypeMapping TypeName="ContosoUniversityModel.vwDept">
+              <MappingFragment StoreEntitySet="vwDept">
+                <ScalarProperty Name="CourseCount" ColumnName="CourseCount" />
+                <ScalarProperty Name="DeptName" ColumnName="DeptName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
